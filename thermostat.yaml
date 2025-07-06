@@ -1,0 +1,63 @@
+mqtt:
+  server: 192.168.1.242
+  port: 1883
+  username: thermo
+  password: thermo
+
+  discovery_topic: homeassistant/<component>/<object_id>/config
+  state_topic: homeassistant/<component>/<object_id>/state
+  command_topic: homeassistant/<component>/<object_id>/command
+
+  zigbee2mqtt_topic: "zigbee2mqtt/"
+
+gpio_chip: /dev/gpiochip0
+
+control:
+  id: "wth_umr_vario"
+  name: "WTH UMR Vario"
+  manufacturer: "WTH"
+  model: "UMR Vario"  
+
+  initial_mode: OFF
+  mode_preference: HEAT
+  off_temperature: 9  # Maintain at least 9C inside to stop pipes from freezing
+  min_cycle_duration: 30
+  valve_min_cycle_duration: 10
+
+  cold_tolerance: 0.3
+  heat_tolerance: 0.3
+
+  precision: 0.1
+  target_temp_step: 0.1
+
+  heating_on_gpio: 7
+  cooling_on_gpio: 8
+
+  initial_temperature: 20
+  max_temperature: 28.0
+  min_temperature: 16.0
+
+  heat_relay_gpio: "23 [GPIOH_7]"
+  cool_relay_gpio: "36 [GPIOH_8]"
+
+rooms:
+  - id: living_room
+    name: Living room
+    zigbee2mqtt:
+      source: Temporary thermostat
+      target_temp: current_heating_setpoint
+      current_temp: local_temperature
+      max_temp: max_temperature_limit
+      min_temp: min_temperature_limit
+    relay_gpio: "22 [GPIOC_7]"
+  - id: bedroom
+    name: Bedroom
+    relay_gpio: "24 [GPIOH_6]"
+  - id: bathroom
+    name: Bathroom
+    # We don't really want to cool the bathroom and attract more moisture
+    cooling: false
+    relay_gpio: "19 [GPIOH_4]"
+  - id: guest_room
+    name: Guest room
+    relay_gpio: "21 [GPIOH_5]"
