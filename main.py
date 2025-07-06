@@ -29,7 +29,7 @@ GPIOCHIP = None
 def set_gpio_state(gpio, state):
     if GPIOCHIP:
         line = GPIOCHIP.line_offset_from_id(gpio)
-        request = self.gpiochip.request_lines(config={  
+        request = GPIOCHIP.request_lines(config={  
             line: gpiod.LineSettings(
                 direction=Direction.OUTPUT
             )
