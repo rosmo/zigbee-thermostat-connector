@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Thermostat } from 'react-thermostat'
-import { Container, Box, Heading, SegmentedControl, Text, Grid } from "@radix-ui/themes"
+import { Container, Box, Heading, SegmentedControl, Text, Grid, Button, Link } from "@radix-ui/themes"
 import { ToggleGroup } from "radix-ui";
 import styled from "styled-components"
 import './App.css'
@@ -106,13 +106,21 @@ function App() {
             <SegmentedControlHeat value="heat">Heat</SegmentedControlHeat>
           </SegmentedControl.Root>
         </Box>
-        <Box my="2">
-          <ToggleGroup.Root type="multiple" value={status ? Object.keys(status.valves).filter((k) => (status.valves[k])) : []}>
-            {status ? Object.entries(status.valves).map(([k, v]) => (
-              <ToggleGroup.Item key={k} value={k}>{k}</ToggleGroup.Item>
-            )) : (<></>)}
-          </ToggleGroup.Root>
-        </Box>
+        <Grid columns="2">
+          <Box my="2">
+            <Link href="/zigbee2mqtt">
+              <Button size="3">Open Zigbee2MQTT</Button>
+            </Link>
+          </Box>
+          <Box my="2">
+            <Text weight="bold">Valve status</Text>
+            <ToggleGroup.Root type="multiple" value={status ? Object.keys(status.valves).filter((k) => (status.valves[k])) : []}>
+              {status ? Object.entries(status.valves).map(([k, v]) => (
+                <ToggleGroup.Item key={k} value={k}>{k}</ToggleGroup.Item>
+              )) : (<></>)}
+            </ToggleGroup.Root>
+          </Box>
+        </Grid>
       </Container>
       <Container size="1">
         <Heading m="5">Room temperature control</Heading>
