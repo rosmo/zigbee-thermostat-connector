@@ -202,14 +202,13 @@ class ControlUnit:
 
         if self.valves[room_id] != new_state:
             if (time.monotonic() - self.valve_last_changed[room_id]) >= self.valve_min_cycle_duration:
-
-            self.logger.info(f"Changing valve {room_id} state from {self.valves[room_id]} to {new_state}")
-        
-            gpio = self.gpios[room_id]
-            set_gpio_state(gpio, True if new_state == MODE_OPEN else False)
-        
-            self.valves[room_id] = new_state
-            self.valve_last_changed[room_id] = time.monotonic()
+                self.logger.info(f"Changing valve {room_id} state from {self.valves[room_id]} to {new_state}")
+            
+                gpio = self.gpios[room_id]
+                set_gpio_state(gpio, True if new_state == MODE_OPEN else False)
+            
+                self.valves[room_id] = new_state
+                self.valve_last_changed[room_id] = time.monotonic()
 
     def to_dict(self):
         msg = {
@@ -324,8 +323,7 @@ class ControlUnit:
                 self.valve_requests[room_id] = MODE_CLOSED
 
         for room_id, desired_state in self.valve_requests.items():
-            if self.valves[room_id] != desired_state:
-                self.operate_valve(room_id, desired_state)
+            self.operate_valve(room_id, desired_state)
             
 class Thermostat:
     def __init__(self, logger, control_unit, config, room):
