@@ -206,7 +206,14 @@ class ControlUnit:
         self.valve_last_changed[room_id] = time.monotonic()
 
     def to_dict(self):
-        return self.get_mqtt_state_message()
+        msg = {
+            "heat": (self.hvac_mode == MODE_HEAT),
+            "cold": (self.hvac_mode == MODE_COOL),
+            "valves": {},
+        }
+        for room_id, valve in self.valves.items():
+            msg["valves"][room_id] = (valve == MODE_OPEN)
+        return msg
 
     def publish_mqtt_state_message(self, client):
         msg = self.get_mqtt_state_message()
@@ -216,12 +223,12 @@ class ControlUnit:
 
     def get_mqtt_state_message(self):
         msg = {
-            "heat": (self.hvac_mode == MODE_HEAT),
-            "cold": (self.hvac_mode == MODE_COOL),
+            "heat": "ON" if self.hvac_mode == MODE_HEAT else "OFF",
+            "cold": "ON" if self.hvac_mode == MODE_COOL else "OFF",
             "valves": {},
         }
         for room_id, valve in self.valves.items():
-            msg["valves"][room_id] = (valve == MODE_OPEN)
+            msg["valves"][room_id] = "ON" if valve == MODE_OPEN else "OFF"
         return msg
 
     def publish_mqtt_discovery_message(self, client):
@@ -252,13 +259,13 @@ class ControlUnit:
                 "heat": {
                     "p": "binary_sensor",
                     "device_class": "heat",
-                    "value_template": "{{ value_json.heat == true }}",
+                    "value_template": "{{ value_json.heat }}",
                     "unique_id": f"{self.unique_id}sth",
                 },
                 "cold": {
                     "p": "binary_sensor",
                     "device_class": "cold",
-                    "value_template": "{{ value_json.cold == true }}",
+                    "value_template": "{{ value_json.cold }}",
                     "unique_id": f"{self.unique_id}stc",
                 }
             },
@@ -269,7 +276,7 @@ class ControlUnit:
             msg["cmps"][f"valve_{room_id}"] = {
                 "p": "binary_sensor",
                 "device_class": "opening",
-                "value_template": ("{{ value_json.valves.%s == true }}" % (room_id)),
+                "value_template": ("{{ value_json.valves.%s }}" % (room_id)),
                 "unique_id": f"{self.unique_id}v{room_id}",
             }
         return msg
@@ -385,13 +392,18 @@ class Thermostat:
         return {
             "temperature": self.current_temp,
             "setpoint_temperature": self.target_temp,
-            "heat": (self.current_mode == MODE_HEAT),
-            "cool": (self.current_mode == MODE_COOL),
+            "heat": "ON" if self.current_mode == MODE_HEAT else "OFF",
+            "cool": "ON" if self.current_mode == MODE_COOL else "OFF",
         }
 
     def to_dict(self):
-        ret = self.get_mqtt_state_message()
-        ret["name"] = self.room["name"]
+        ret = {
+            "temperature": self.current_temp,
+            "setpoint_temperature": self.target_temp,
+            "heat": (self.current_mode == MODE_HEAT),
+            "cool": (self.current_mode == MODE_COOL),
+            "name": self.room["name"],
+        }
         return ret
 
     def publish_mqtt_discovery_message(self, client):
@@ -436,13 +448,13 @@ class Thermostat:
                 "heat": {
                     "p": "binary_sensor",
                     "device_class": "heat",
-                    "value_template": "{{ value_json.heat == true }}",
+                    "value_template": "{{ value_json.heat }}",
                     "unique_id": f"{self.unique_id}sth",
                 },
                 "cold": {
                     "p": "binary_sensor",
                     "device_class": "cold",
-                    "value_template": "{{ value_json.cold == true }}",
+                    "value_template": "{{ value_json.cold }}",
                     "unique_id": f"{self.unique_id}stc",
                 },
             },
