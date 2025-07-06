@@ -8,7 +8,7 @@ import sys
 import time
 import gpiod
 import platform
-from gpiod.line import Direction, Value
+from gpiod.line import Direction, Value, Bias
 from gevent.pywsgi import WSGIServer
 from flask import Flask, request, jsonify, Response
 from flask_classful import FlaskView, route
@@ -34,6 +34,7 @@ def set_gpio_state(gpio, state):
             line: gpiod.LineSettings(
                 direction=Direction.OUTPUT,
                 active_low=GPIOREVERSE,
+                bias=Bias.PULL_UP if GPIOREVERSE else Bias.PULL_DOWN,
             )
         })
         request.set_value(line, Value.ACTIVE if state else Value.INACTIVE)
