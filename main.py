@@ -252,13 +252,13 @@ class ControlUnit:
                 "heat": {
                     "p": "binary_sensor",
                     "device_class": "heat",
-                    "value_template": "{{ value_json.heat }}",
+                    "value_template": "{{ value_json.heat == true }}",
                     "unique_id": f"{self.unique_id}sth",
                 },
                 "cold": {
                     "p": "binary_sensor",
                     "device_class": "cold",
-                    "value_template": "{{ value_json.cold }}",
+                    "value_template": "{{ value_json.cold == true }}",
                     "unique_id": f"{self.unique_id}stc",
                 }
             },
@@ -269,7 +269,7 @@ class ControlUnit:
             msg["cmps"][f"valve_{room_id}"] = {
                 "p": "binary_sensor",
                 "device_class": "opening",
-                "value_template": ("{{ value_json.valves.%s }}" % (room_id)),
+                "value_template": ("{{ value_json.valves.%s == true }}" % (room_id)),
                 "unique_id": f"{self.unique_id}v{room_id}",
             }
         return msg
@@ -436,13 +436,13 @@ class Thermostat:
                 "heat": {
                     "p": "binary_sensor",
                     "device_class": "heat",
-                    "value_template": "{{ value_json.heat }}",
+                    "value_template": "{{ value_json.heat == true }}",
                     "unique_id": f"{self.unique_id}sth",
                 },
                 "cold": {
                     "p": "binary_sensor",
                     "device_class": "cold",
-                    "value_template": "{{ value_json.cold }}",
+                    "value_template": "{{ value_json.cold == true }}",
                     "unique_id": f"{self.unique_id}stc",
                 },
             },
