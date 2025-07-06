@@ -25,6 +25,7 @@ MODE_OPEN = 1
 MODE_CLOSED = 0
 
 GPIOCHIP = None
+SYSTEMD = sdnotify.SystemdNotifier()
 
 def set_gpio_state(gpio, state):
     if GPIOCHIP:
@@ -476,8 +477,7 @@ def control_loop(control_unit, thermostats):
 
         gevent.sleep(1)
 
-        n = sdnotify.SystemdNotifier()
-        n.notify("WATCHDOG=1")
+        SYSTEMD.notify("WATCHDOG=1")
 
 
 def on_mqtt_message(client, userdata, msg):
@@ -562,8 +562,7 @@ if __name__ == "__main__":
     control_greenlet = gevent.spawn(control_loop, control_unit, thermostats)
 
     try:
-        n = sdnotify.SystemdNotifier()
-        n.notify("READY=1")
+        SYSTEMD.notify("READY=1")
         gevent.joinall([srv_greenlet, control_greenlet, mqtt_greenlet])
     except KeyboardInterrupt:
         http_server.stop()
