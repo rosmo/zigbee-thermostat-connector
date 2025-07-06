@@ -53,12 +53,30 @@ rooms:
     relay_gpio: "16 [GPIOX_10]"
   - id: bedroom
     name: Bedroom
+    zigbee2mqtt:
+      source: Temporary thermostat
+      target_temp: current_heating_setpoint
+      current_temp: local_temperature
+      max_temp: max_temperature_limit
+      min_temp: min_temperature_limit
     relay_gpio: "24 [GPIOH_6]"
   - id: bathroom
     name: Bathroom
     # We don't really want to cool the bathroom and attract more moisture
     cooling: false
+    zigbee2mqtt:
+      source: Temporary thermostat
+      target_temp: current_heating_setpoint
+      current_temp: local_temperature
+      max_temp: max_temperature_limit
+      min_temp: min_temperature_limit
     relay_gpio: "19 [GPIOH_4]"
   - id: guest_room
     name: Guest room
+    zigbee2mqtt:
+      source: Temporary thermostat
+      target_temp: current_heating_setpoint
+      current_temp: local_temperature
+      max_temp: max_temperature_limit
+      min_temp: min_temperature_limit
     relay_gpio: "21 [GPIOH_5]"
