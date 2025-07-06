@@ -200,13 +200,16 @@ class ControlUnit:
         if self.hvac_mode == MODE_COOL and not self.cooling_enabled[room_id]:
             new_state = MODE_CLOSED
 
-        self.logger.info(f"Changing valve {room_id} state from {self.valves[room_id]} to {new_state}")
+        if self.valves[room_id] != new_state:
+            if (time.monotonic() - self.valve_last_changed[room_id]) >= self.valve_min_cycle_duration:
+
+            self.logger.info(f"Changing valve {room_id} state from {self.valves[room_id]} to {new_state}")
         
-        gpio = self.gpios[room_id]
-        set_gpio_state(gpio, True if new_state == MODE_OPEN else False)
+            gpio = self.gpios[room_id]
+            set_gpio_state(gpio, True if new_state == MODE_OPEN else False)
         
-        self.valves[room_id] = new_state
-        self.valve_last_changed[room_id] = time.monotonic()
+            self.valves[room_id] = new_state
+            self.valve_last_changed[room_id] = time.monotonic()
 
     def to_dict(self):
         msg = {
@@ -322,8 +325,7 @@ class ControlUnit:
 
         for room_id, desired_state in self.valve_requests.items():
             if self.valves[room_id] != desired_state:
-                if (time.monotonic() - self.valve_last_changed[room_id]) >= self.valve_min_cycle_duration:
-                    self.operate_valve(room_id, desired_state)
+                self.operate_valve(room_id, desired_state)
             
 class Thermostat:
     def __init__(self, logger, control_unit, config, room):
@@ -331,7 +333,7 @@ class Thermostat:
         self.config = config
         self.control_unit = control_unit
 
-        self.id = room["id"]
+        self.id = room["id"] 
         self.room = room
         self.zigbee2mqtt = {}
         if "zigbee2mqtt" in room:
@@ -416,7 +418,7 @@ class Thermostat:
         client.publish(discovery_topic, json.dumps(msg), qos=2)
 
     def get_mqtt_discovery_message(self):
-        mqtt_id = self.id
+        mqtt_id = "%s_thermostat" % (self.id)
         state_topic = self.state_topic.replace("<component>", "device").replace("<object_id>", mqtt_id)
         msg = { 
             "dev": {
