@@ -15,6 +15,7 @@ from flask_classful import FlaskView, route
 import paho.mqtt.client as paho
 import json
 import gevent
+import sdnotify
 
 MODE_HEAT = "HEAT"
 MODE_COOL = "COOL"
@@ -475,6 +476,10 @@ def control_loop(control_unit, thermostats):
 
         gevent.sleep(1)
 
+        n = sdnotify.SystemdNotifier()
+        n.notify("WATCHDOG=1")
+
+
 def on_mqtt_message(client, userdata, msg):
     logger, mqtt_config, control_unit, thermostats = userdata
     try:
@@ -557,6 +562,8 @@ if __name__ == "__main__":
     control_greenlet = gevent.spawn(control_loop, control_unit, thermostats)
 
     try:
+        n = sdnotify.SystemdNotifier()
+        n.notify("READY=1")
         gevent.joinall([srv_greenlet, control_greenlet, mqtt_greenlet])
     except KeyboardInterrupt:
         http_server.stop()

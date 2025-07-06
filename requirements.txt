@@ -6,3 +6,4 @@ flask-classful~=0.16.0
 paho-mqtt~=2.1.0
 gpiod~=2.3.0
 luma-oled~=3.14.0
+sdnotify~=0.3.2
