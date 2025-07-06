@@ -11,6 +11,7 @@ mqtt:
   zigbee2mqtt_topic: "zigbee2mqtt/"
 
 gpio_chip: /dev/gpiochip0
+gpio_reverse: true
 
 control:
   id: "wth_umr_vario"
@@ -38,7 +39,7 @@ control:
   min_temperature: 16.0
 
   heat_relay_gpio: "23 [GPIOH_7]"
-  cool_relay_gpio: "36 [GPIOH_8]"
+  cool_relay_gpio: "18 [GPIOX_8]"
 
 rooms:
   - id: living_room
@@ -49,7 +50,7 @@ rooms:
       current_temp: local_temperature
       max_temp: max_temperature_limit
       min_temp: min_temperature_limit
-    relay_gpio: "22 [GPIOC_7]"
+    relay_gpio: "16 [GPIOX_10]"
   - id: bedroom
     name: Bedroom
     relay_gpio: "24 [GPIOH_6]"

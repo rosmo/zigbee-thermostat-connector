@@ -25,16 +25,19 @@ MODE_OPEN = 1
 MODE_CLOSED = 0
 
 GPIOCHIP = None
+GPIOREVERSE = False
 
 def set_gpio_state(gpio, state):
     if GPIOCHIP:
         line = GPIOCHIP.line_offset_from_id(gpio)
         request = GPIOCHIP.request_lines(config={  
             line: gpiod.LineSettings(
-                direction=Direction.OUTPUT
+                direction=Direction.OUTPUT,
+                active_low=GPIOREVERSE,
             )
         })
         request.set_value(line, Value.ACTIVE if state else Value.INACTIVE)
+
     else:
         print(f"Setting {gpio} to {state}")
 
@@ -556,9 +559,13 @@ if __name__ == "__main__":
 
     try:
         GPIOCHIP = gpiod.Chip(config["gpio_chip"])
+
     except Exception as e:
         logger.fatal(f"Failed to open GPIO chip: {config['gpio_chip']}: {e}")
         # sys.exit(1)
+
+    if "gpio_reverse" in config:
+        GPIOREVERSE = config["gpio_reverse"]
 
     control_unit = ControlUnit(logger, config)
     thermostats = [Thermostat(logger, control_unit, config, room) for room in config["rooms"]]
